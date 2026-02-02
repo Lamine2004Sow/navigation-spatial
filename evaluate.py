@@ -4,12 +4,12 @@ import time
 import numpy as np
 import torch
 
-from models import PolicyValueNet, RunningNorm
+from models import PolicyValueNet, RunningNorm, safe_torch_load
 from space_env import EnvConfig, SpaceNavigationEnv
 
 
 def load_policy(ckpt_path, obs_dim, act_dim, device):
-    data = torch.load(ckpt_path, map_location=device)
+    data = safe_torch_load(ckpt_path, device)
     model = PolicyValueNet(obs_dim, act_dim).to(device)
     model.load_state_dict(data["model"])
     model.eval()

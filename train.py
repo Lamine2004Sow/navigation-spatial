@@ -36,12 +36,15 @@ def main():
     parser.add_argument("--minibatch", type=int, default=256)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--out", type=str, default="artifacts")
+    parser.add_argument("--render", action="store_true")
+    parser.add_argument("--render-every", type=int, default=2)
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
 
-    env = make_env(args.task)
+    render_mode = "human" if args.render else None
+    env = make_env(args.task, render_mode=render_mode)
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.shape[0]
 
@@ -103,6 +106,9 @@ def main():
             ep_return += reward
             ep_len += 1
             total_steps += 1
+
+            if args.render and args.render_every > 0 and total_steps % args.render_every == 0:
+                env.render()
 
             if done:
                 episode_returns.append(ep_return)
@@ -171,6 +177,7 @@ def main():
                 f"update {update} steps {total_steps} avg_return {avg_return:.2f} avg_len {avg_len:.1f} time {elapsed:.1f}s"
             )
 
+    env.close()
     torch.save({"model": model.state_dict(), "norm": norm.state_dict()}, ckpt_path)
     print(f"saved checkpoint to {ckpt_path}")
 

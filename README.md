@@ -29,6 +29,9 @@ pip install numpy torch gymnasium matplotlib
 # Train a docking policy
 python train.py --task dock --total-steps 200000
 
+# Train with live visualization (slower)
+python train.py --task dock --total-steps 200000 --render --render-every 2
+
 # Visualize a trained policy
 python evaluate.py --task dock --ckpt artifacts/ppo_dock.pt --deterministic
 
@@ -37,6 +40,21 @@ python baseline.py --task dock --episodes 10
 
 # Plot rewards
 python plot_rewards.py --log artifacts/reward.csv
+
+# Generate LaTeX report assets (figures + results tables)
+python latex/generate_assets.py --episodes 30
+
+# Compile the LaTeX report manually (requires pdflatex)
+cd latex
+pdflatex report.tex
+
+# Makefile shortcuts
+make venv deps
+make train TASK=dock STEPS=200000
+make train TASK=dock STEPS=200000 RENDER=1 RENDER_EVERY=2
+make eval TASK=dock CKPT=artifacts/ppo_dock.pt DETERMINISTIC=1
+make plot LOG=artifacts/reward.csv
+make report REPORT_EPISODES=30
 ```
 
 ## Environment details

@@ -17,6 +17,13 @@ class PPOConfig:
     max_grad_norm: float = 0.5
 
 
+def safe_torch_load(path: str, device):
+    try:
+        return torch.load(path, map_location=device, weights_only=False)
+    except TypeError:
+        return torch.load(path, map_location=device)
+
+
 class RunningNorm:
     def __init__(self, shape, eps: float = 1e-5):
         self.mean = np.zeros(shape, dtype=np.float32)
